@@ -140,7 +140,7 @@ async function handleMultipleResults(obj){
     const cleanupRegex = /\b(on |in |as of\b)\b/gi
 
     try {
-      const realDate = Date.parse(dateString.replace(cleanupRegex, ''));
+      const realDate = Date.parse(dateString.replace(cleanupRegex, '')) ? Date.parse(dateString.replace(cleanupRegex, '')) : null;
       return realDate
     } 
     catch (err){
