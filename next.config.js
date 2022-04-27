@@ -3,8 +3,12 @@ module.exports = {
     async rewrites() {
         return [
           {
-            source: '/api/:w*',
-            destination: 'http://localhost:3000/:w*',
+            source: '/api/',
+            destination: 'http://localhost:3000/',
+          },
+          {
+            source: '/api/:lookup*',
+            destination: 'http://localhost:3000/:lookup*',
           },
         ]
       },

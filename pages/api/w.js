@@ -52,24 +52,32 @@ async function handleMultipleResults(obj){
   }
   
   async function fetchWtf(searchString){
-    const data = await wtf.fetch(searchString)
-    const parsed = data !== null ? await parseWtf(data.json()) : [];
-  
-    let sorted = parsed.sort((a, b) => {
-      if (a.date && b.date){
-        return new Date(a.date) - new Date(b.date);
+
+    try {
+
+      const data = await wtf.fetch(searchString)
+      const parsed = data !== null ? await parseWtf(data.json()) : [];
+    
+      let sorted = parsed.sort((a, b) => {
+        if (a.date && b.date){
+          return new Date(a.date) - new Date(b.date);
+        }
+      });
+    
+      const headerData = {header:{
+        searchedValue: searchString,
+        foundArticleTitle: parsed[0] ? parsed[0].articleTitle : '',
+        countRecords: sorted ? sorted.length : 0,}
       }
-    });
-  
-    const headerData = {header:{
-      searchedValue: searchString,
-      foundArticleTitle: parsed[0] ? parsed[0].articleTitle : '',
-      countRecords: sorted ? sorted.length : 0,}
+    
+      return {sorted: sorted, 
+              headerData: headerData
+            }; //data.json();  
+
+    } catch (err){
+      console.log(err)
     }
-  
-    return {sorted: sorted, 
-            headerData: headerData
-          }; //data.json();  
+
   };
   
   
@@ -88,11 +96,14 @@ async function handleMultipleResults(obj){
         sentences.map((sentence)=>{
           const sentenceText = sentence.text;
           const sentenceDate = getPageDates(sentenceText);
+          if (sentenceDate.length > 1){
+            console.log(sentenceDate, sentenceText)
+          }
           if(sentenceDate[0]){
             const cleanupRegex = /\b(on |in |as of\b)\b/gi
             const approximationRegex = /\b(.in |.In |.as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((10[1-9]\d|11[1-9]\d|12[1-9]\d|13[1-9]\d|14[1-9]\d|15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi
             const humanDate = sentenceDate[0][0];
-            const realDate = Date.parse(sentenceDate[0][0].replace(cleanupRegex, ''));
+            const realDate = inferDatefromString(sentenceDate[0][0]);
             
             const row =  {
               articleTitle: wtFetchData.title,
@@ -123,5 +134,19 @@ async function handleMultipleResults(obj){
     const regex = /\b(on |.On |in |.In |as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi;
     const array = [...data.matchAll(regex)];
     return array;
-  }
+  };
+
+  function inferDatefromString(dateString){
+    const cleanupRegex = /\b(on |in |as of\b)\b/gi
+
+    try {
+      const realDate = Date.parse(dateString.replace(cleanupRegex, ''));
+      return realDate
+    } 
+    catch (err){
+      console.log(err)
+      return null
+    }
+
+  };
   
