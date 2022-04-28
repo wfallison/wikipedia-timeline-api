@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
   //fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&list=allpages&&aplimit=500&apfrom=${searchTerm}`
 
-  const url  = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=allpages&&aplimit=500&apfrom=${searchTerm}`
+  const url  = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=allpages&&aplimit=50&apfrom=${searchTerm}`
   //const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&list=allpages&&aplimit=500&apfrom=denver%20Township'
 
   console.log(url)
