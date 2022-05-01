@@ -1,6 +1,9 @@
 import Cors from 'cors'
 import initMiddleware from '../../lib/init-middleware'
-import dateMatches from '../../controllers/dateMatches.controller'
+import {getDateMatches} from '../../controllers/dateMatches.controller'
+
+import moment from 'moment';
+
 const wtf = require('wtf_wikipedia');
 
 // Initialize the cors middleware
@@ -84,18 +87,14 @@ async function handleMultipleResults(obj){
       paragraphs.map((paragraph) => {
         const sentences = paragraph.sentences;
         sentences.map((sentence)=>{
-          const sentenceDate = getPageDates(sentence.text);
-          dateMatches.getDateMatches(sentence.text)
+          //const sentenceDate = getPageDates(sentence.text);
+          const sentenceDate = getDateMatches(sentence.text)
 
-          if (sentenceDate.length > 1){
-            console.log(sentenceDate, sentenceText)
-          }
           if(sentenceDate[0]){
             const approximationRegex = /\b(.in |.In |.as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((10[1-9]\d|11[1-9]\d|12[1-9]\d|13[1-9]\d|14[1-9]\d|15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi
             const humanDate = sentenceDate[0][0];
             const realDate = inferDatefromString(sentenceDate[0][0]);
 
-            
             const row =  {
               articleTitle: wtFetchData.title,
               pageId: pageID,
@@ -129,10 +128,17 @@ async function handleMultipleResults(obj){
 
 
   function inferDatefromString(dateString){
-    const cleanupRegex = /\b(on |in |as of\b)\b/gi
+    const cleanupRegex = /\b(on |in |as of |the |in |around\b)\b/gi
 
     try {
-      const realDate = Date.parse(dateString.replace(cleanupRegex, '')) ? Date.parse(dateString.replace(cleanupRegex, '')) : null;
+      const cleanDate = dateString.replace(cleanupRegex, '')
+      const realDate = Date.parse(cleanDate) ? Date.parse(cleanDate) : null;
+      // if realDate is null after native date functions
+      // then try to use moment to get a js date for BC times?
+
+      console.log('realDate', realDate)
+      console.log('cleanDate', cleanDate)
+
       return realDate
     } 
     catch (err){
