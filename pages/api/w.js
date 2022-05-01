@@ -1,5 +1,6 @@
 import Cors from 'cors'
 import initMiddleware from '../../lib/init-middleware'
+import dateMatches from '../../controllers/dateMatches.controller'
 const wtf = require('wtf_wikipedia');
 
 // Initialize the cors middleware
@@ -14,22 +15,11 @@ const cors = initMiddleware(
 )
 
 export default async function handler(req, res) {
-  // Run cors
   await cors(req, res)
-
-  //console.log(req.body)
-
-  //var obj = [{articleTitle: "Oregon"}]//
   var obj = req.body;
-
   const data = await handleMultipleResults(obj)
   res.send(data) 
-
-  // Rest of the API logic
-  //res.json({ message: 'Hello Everyone!' })
 }
-
-
 
 async function handleMultipleResults(obj){
 
@@ -94,16 +84,17 @@ async function handleMultipleResults(obj){
       paragraphs.map((paragraph) => {
         const sentences = paragraph.sentences;
         sentences.map((sentence)=>{
-          const sentenceText = sentence.text;
-          const sentenceDate = getPageDates(sentenceText);
+          const sentenceDate = getPageDates(sentence.text);
+          dateMatches.getDateMatches(sentence.text)
+
           if (sentenceDate.length > 1){
             console.log(sentenceDate, sentenceText)
           }
           if(sentenceDate[0]){
-            const cleanupRegex = /\b(on |in |as of\b)\b/gi
             const approximationRegex = /\b(.in |.In |.as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((10[1-9]\d|11[1-9]\d|12[1-9]\d|13[1-9]\d|14[1-9]\d|15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi
             const humanDate = sentenceDate[0][0];
             const realDate = inferDatefromString(sentenceDate[0][0]);
+
             
             const row =  {
               articleTitle: wtFetchData.title,
@@ -135,6 +126,7 @@ async function handleMultipleResults(obj){
     const array = [...data.matchAll(regex)];
     return array;
   };
+
 
   function inferDatefromString(dateString){
     const cleanupRegex = /\b(on |in |as of\b)\b/gi
