@@ -90,17 +90,17 @@ async function handleMultipleResults(obj){
           //const sentenceDate = getPageDates(sentence.text);
           const sentenceDate = getDateMatches(sentence.text)
 
-          if(sentenceDate[0]){
+          for (const element of sentenceDate) {
             const approximationRegex = /\b(.in |.In |.as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((10[1-9]\d|11[1-9]\d|12[1-9]\d|13[1-9]\d|14[1-9]\d|15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi
-            const humanDate = sentenceDate[0][0];
-            const realDate = inferDatefromString(sentenceDate[0][0]);
+            const humanDate = element[0];
+            const realDate = inferDatefromString(element[0]);
 
             const row =  {
               articleTitle: wtFetchData.title,
               pageId: pageID,
               stringDate: humanDate,
-              context: sentenceDate[0].input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
-              sentence: sentenceDate[0].input,
+              context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
+              sentence: element.input,
               date: new Date(realDate).toISOString().slice(0, 19).replace('T', ' '),
               dateApproximatated: humanDate.match(approximationRegex) ? true : false,
               meta: {
@@ -109,13 +109,8 @@ async function handleMultipleResults(obj){
             };
             rows.push(row)
           }
-          else {
-            return
-          }
         })
-      })
-      //return rows.sort((a, b) => b.date - a.date);
-  
+      })  
     })
     return rows;
   };

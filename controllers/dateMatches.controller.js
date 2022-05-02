@@ -27,6 +27,7 @@ export const getDateMatches = (sentence) => {
         > to a depth of 2000 m. (Earth Article)
     */ 
     
+    // use the old method of doing it all at once
     let array = [...sentence.matchAll(regex)];
 
     if (array.length == 0){
@@ -35,8 +36,8 @@ export const getDateMatches = (sentence) => {
         if (bcDates.length !== 0) {
             array = bcDates;
         }
-
     } 
+
     return array;
 };
 
