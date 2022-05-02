@@ -127,13 +127,24 @@ async function handleMultipleResults(obj){
 
     try {
       const cleanDate = dateString.replace(cleanupRegex, '')
-      const realDate = Date.parse(cleanDate) ? Date.parse(cleanDate) : null;
+      let realDate = !isNaN(parseFloat(Date.parse(cleanDate))) && isFinite(Date.parse(cleanDate)) ? Date.parse(cleanDate) : null;
       // if realDate is null after native date functions
       // then try to use moment to get a js date for BC times?
-
-      console.log('realDate', realDate)
-      console.log('cleanDate', cleanDate)
-
+      
+      if (realDate == null){
+          // try bc dates
+          if (cleanDate.indexOf('BC') > 0 ){
+            const BcYear = cleanDate.replace('BC', '');
+            const paddedYear = BcYear.padStart(7, 0);
+            realDate = `-${paddedYear}`;
+        }
+      }
+      if (realDate == null){
+        console.log('realDate', realDate)
+        console.log('dateString', dateString)
+        console.log('cleanDate', cleanDate)
+      }
+      
       return realDate
     } 
     catch (err){
