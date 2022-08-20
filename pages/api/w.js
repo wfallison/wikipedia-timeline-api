@@ -144,19 +144,19 @@ async function handleMultipleResults(obj){
       if (realDate == null){
           // try bc dates
           if (cleanDate.indexOf('BC') > 0 ){
-            const BcYear = cleanDate.replace('BC', '').replaceAll(',', '');
+            const BcYear = cleanDate.replace('BC', '').replace(/,/g, '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `-${paddedYear}`;
           }
           if (cleanDate.indexOf('AD') > 0 ){
-            const BcYear = cleanDate.replace('AD', '').replaceAll(',', '');
+            const BcYear = cleanDate.replace('AD', '').replace(/,/g, '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `${paddedYear}`;
           }
           if (cleanDate.indexOf('ago') > 0){
             const today = new Date();
             if (cleanDate.indexOf('years ago') > 0){
-              let yearsAgo = cleanDate.replace('years ago', '').replaceAll(',', '')
+              let yearsAgo = cleanDate.replace('years ago', '').replace(/,/g, '');
               if (yearsAgo <= 271821) //oldest date js can handle?
               realDate = today.setFullYear(today.getFullYear() - yearsAgo)
             }
