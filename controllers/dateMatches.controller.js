@@ -41,6 +41,11 @@ export const getDateMatches = (sentence) => {
           October 12. O'Higgins, Carrera and 
           many of the Chilean rebels escaped 
           to Argentina.
+        > kyr, myr, byr, kya, mya, bya
+          (Thousand, Million, Billion, Time ago in Ka (Thousands), 
+          time ago in MA (Millions), time ago in GA (Billions))
+          Read more:
+          https://en.wikipedia.org/wiki/Year#SI_prefix_multipliers
 
           > Infer October 12, 1814
             Instead of 
