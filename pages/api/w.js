@@ -137,7 +137,12 @@ async function handleMultipleResults(obj){
             const BcYear = cleanDate.replace('BC', '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `-${paddedYear}`;
-        }
+          }
+          if (cleanDate.indexOf('AD') > 0 ){
+            const BcYear = cleanDate.replace('AD', '');
+            const paddedYear = BcYear.padStart(7, 0);
+            realDate = `${paddedYear}`;
+          }
       }
       if (realDate == null){
         console.log('realDate', realDate)
