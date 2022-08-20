@@ -97,27 +97,45 @@ async function handleMultipleResults(obj){
             const humanDate = element[0];
             const realDate = inferDatefromString(element[0]);
 
-            try {
-              new Date(realDate).toISOString().slice(0, 19).replace('T', ' ')
-            }catch (e){
-              console.log(element)
-              console.log(realDate)
+            if (realDate !== null){
+
+                const jsDate = new Date(realDate).toISOString().slice(0, 19).replace('T', ' ');
+
+                const row =  {
+                  articleTitle: wtFetchData.title,
+                  pageId: pageID,
+                  stringDate: humanDate,
+                  context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
+                  sentence: element.input,
+                  date: jsDate,
+                  dateApproximatated: humanDate.match(approximationRegex) ? true : false,
+                  meta: {
+                    sectionTitle: sectionTitle,
+                  }
+                };
+
+                rows.push(row)
             }
+            else if (realDate == null){
 
+              const row =  {
+                articleTitle: wtFetchData.title,
+                pageId: pageID,
+                stringDate: humanDate,
+                context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
+                sentence: element.input,
+                date: null,
+                dateApproximatated: null,
+                meta: {
+                  sectionTitle: sectionTitle,
+                  err: true,
+                  errMsg: 'Real date could not be found'
+                }
+              };
 
-            const row =  {
-              articleTitle: wtFetchData.title,
-              pageId: pageID,
-              stringDate: humanDate,
-              context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
-              sentence: element.input,
-              date: new Date(realDate).toISOString().slice(0, 19).replace('T', ' '),
-              dateApproximatated: humanDate.match(approximationRegex) ? true : false,
-              meta: {
-                sectionTitle: sectionTitle,
-              }
-            };
-            rows.push(row)
+              rows.push(row)
+
+            }
           }
         })
       })  
@@ -163,7 +181,7 @@ async function handleMultipleResults(obj){
           }
       }
       if (realDate == null){
-        console.log(`Could not find date from string: `, dateString)
+        throw `Could not find date from string:  ${dateString}`
       }
       
       return realDate
