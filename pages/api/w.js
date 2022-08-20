@@ -31,8 +31,10 @@ async function handleMultipleResults(obj){
   
     for (const el of obj) {
       const item = await fetchWtf(el.articleTitle)
-        allArticles = allArticles.concat(item.sorted)
-        allHeaders = allHeaders.concat(item.headerData)
+        if (item){
+          allArticles = allArticles.concat(item.sorted)
+          allHeaders = allHeaders.concat(item.headerData)
+        }
       }
     
     const sorted = allArticles.sort((a, b) => {
@@ -65,7 +67,7 @@ async function handleMultipleResults(obj){
     
       return {sorted: sorted, 
               headerData: headerData
-            }; //data.json();  
+            }; 
 
     } catch (err){
       console.log(err)
@@ -94,6 +96,14 @@ async function handleMultipleResults(obj){
             const approximationRegex = /\b(.in |.In |.as of)\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((10[1-9]\d|11[1-9]\d|12[1-9]\d|13[1-9]\d|14[1-9]\d|15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))/gi
             const humanDate = element[0];
             const realDate = inferDatefromString(element[0]);
+
+            try {
+              new Date(realDate).toISOString().slice(0, 19).replace('T', ' ')
+            }catch (e){
+              console.log(element)
+              console.log(realDate)
+            }
+
 
             const row =  {
               articleTitle: wtFetchData.title,
@@ -134,20 +144,26 @@ async function handleMultipleResults(obj){
       if (realDate == null){
           // try bc dates
           if (cleanDate.indexOf('BC') > 0 ){
-            const BcYear = cleanDate.replace('BC', '');
+            const BcYear = cleanDate.replace('BC', '').replaceAll(',', '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `-${paddedYear}`;
           }
           if (cleanDate.indexOf('AD') > 0 ){
-            const BcYear = cleanDate.replace('AD', '');
+            const BcYear = cleanDate.replace('AD', '').replaceAll(',', '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `${paddedYear}`;
           }
+          if (cleanDate.indexOf('ago') > 0){
+            const today = new Date();
+            if (cleanDate.indexOf('years ago') > 0){
+              let yearsAgo = cleanDate.replace('years ago', '').replaceAll(',', '')
+              if (yearsAgo <= 271821) //oldest date js can handle?
+              realDate = today.setFullYear(today.getFullYear() - yearsAgo)
+            }
+          }
       }
       if (realDate == null){
-        console.log('realDate', realDate)
-        console.log('dateString', dateString)
-        console.log('cleanDate', cleanDate)
+        console.log(`Could not find date from string: `, dateString)
       }
       
       return realDate

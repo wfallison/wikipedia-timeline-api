@@ -9,12 +9,7 @@
     
 */
 
-export const getDateMatches = (sentence) => {
-
-    const regex = /\b( on |.On |in |.In |as of |the |.The |of |around |a )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
-    const bcDatesRegex = /\d{1,} BC|\d{1,}BC|\d{1,}AD |\d{1,} AD /gi
-
-    /* ============== NOT HANDLED ==============
+ /* ============== NOT HANDLED ==============
         > around the year 270 BC.
         > in the 7th century BC,
         > the year 270 BC
@@ -26,7 +21,6 @@ export const getDateMatches = (sentence) => {
         > after 1600 // not to be confused with a 
                      // number like, 'after 1600 
                      // bottles of...'
-        > until 1826
         > in 2007–2008  ?
         > in the 1560s–70s
         > between 1540 and 1818
@@ -65,7 +59,17 @@ export const getDateMatches = (sentence) => {
             ==> 000 AD
             *Poorly fixed*
     */ 
-    
+
+export const getDateMatches = (sentence) => {
+
+    //remove comma making 10,000 BC turn into 000 BC
+    //probably more instances of this kind of thing 
+    sentence = sentence.replaceAll(',', '')
+
+    const regex = /\b( on |.On |in |.In |as of |the |.The |of |around |a )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
+    const bcDatesRegex = /\d{1,} BC|\d{1,}BC|\d{1,}AD |\d{1,} AD /gi
+    const relativeDatesRegex = /\b((\d+)( years ago| months ago| days ago| centuries ago| decades ago))/gi
+
     // use the old method of doing it all at once
     let array = [...sentence.matchAll(regex)];
 
@@ -75,6 +79,10 @@ export const getDateMatches = (sentence) => {
         const bcDates = [...sentence.matchAll(bcDatesRegex)];
         if (bcDates.length !== 0) {
             array = bcDates;
+        }
+        const relativeDates = [...sentence.matchAll(relativeDatesRegex)]
+        if (relativeDates.length !== 0){
+            array = relativeDates
         }
     } 
 
