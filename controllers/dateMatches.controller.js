@@ -65,6 +65,13 @@
         > in Oregon with more than 50,000 adherents
             ==> 000 AD
             *Poorly fixed*
+        > Eastern Oregon is sparsely populated but is 
+          home to Hermiston which with a population of
+          18000 is the largest and fastest-growing 
+          city in the region.
+            ==> (year) of 1800
+            ==> Should not appear at all, as its a 
+                description of the population size
     */ 
 
 export const getDateMatches = (sentence) => {
