@@ -81,7 +81,7 @@ export const getDateMatches = (sentence) => {
     //Dates relative to NOW only
     //Dates relative to other dates within the article
     //need to be handled elsewhere
-    const relativeDatesRegex = /\b((\d+)( years ago| months ago| days ago| centuries ago| decades ago))/gi
+    const relativeDatesRegex = /\b((\d+|([0-9]+\.?[0-9]*|\.[0-9]+))(years ago| months ago| days ago| centuries ago| decades ago | million years ago| billion years ago))/gi
 
     // use the old method of doing it all at once
     let array = [...sentence.matchAll(regex)];

@@ -99,7 +99,7 @@ async function handleMultipleResults(obj){
                 try {
                   jsDate = new Date(realDate.realDate).toISOString().slice(0, 19).replace('T', ' ');
                 }catch(err){
-                  console.log(`Could not make jsDate from ${realDate}`)
+                  console.log(`Could not make jsDate from ${realDate.realDate}`)
                 }
 
                 if (!realDate.dateSortMs){
@@ -152,12 +152,10 @@ async function handleMultipleResults(obj){
           if (cleanDate.indexOf('BC') > 0 ){
             const BcYear = cleanDate.replace('BC', '').replace(/,/g, '');
             const paddedYear = BcYear.padStart(7, 0);
-            //Just subtracting the BC date could mean this is off by 2000?
-            //-10000bc is actually 12,000 years ago
             realDate = `-${paddedYear}`;
-            const d = new Date(realDate).toISOString().slice(0, 19).replace('T', ' ')
-            if (typeof d.getTime === 'function'){
-              dateSortMs = d.getTime();
+            const startDate = new Date(realDate, 0, 1)
+            if (typeof startDate.getTime === 'function'){
+              dateSortMs = startDate.getTime();
             }
             else {
               dateSortMs = realDate
@@ -179,15 +177,28 @@ async function handleMultipleResults(obj){
             const today = new Date();
             if (cleanDate.indexOf('years ago') > 0){
               let yearsAgo = cleanDate.replace('years ago', '').replace(/,/g, '');
-              if (yearsAgo <= 271821) //oldest date js can handle?
+              if (yearsAgo.indexOf('million') > 0){
+                yearsAgo = yearsAgo.replace('million', '')
+                const today = new Date();
+                const oneMillionYearsMS = 31556952000000000;
+                realDate = today.getTime() - (yearsAgo * oneMillionYearsMS);
+                dateSortMs = today.getTime() - (yearsAgo * oneMillionYearsMS); 
+              }
+              if (yearsAgo.indexOf('billion') > 0){
+                yearsAgo = yearsAgo.replace('billion', '')
+                const today = new Date();
+                const oneBillingYearsMS = 31556952000000000000;
+                realDate = today.getTime() - (yearsAgo * oneBillingYearsMS);
+                dateSortMs = today.getTime() - (yearsAgo * oneBillingYearsMS); 
+              }
+              else if (yearsAgo <= 271821) //oldest date js can handle?
                 {
                   realDate = today.setFullYear(today.getFullYear() - yearsAgo)
-                  dateSortMs = realDate;
                 }
               else {
                 const today = new Date();
                 const yearMS = 31556952000;
-                realDate = '';
+                realDate = today.getTime() - (yearsAgo * yearMS);
                 dateSortMs = today.getTime() - (yearsAgo * yearMS); 
               }
             }
