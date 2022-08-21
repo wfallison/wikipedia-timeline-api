@@ -46,6 +46,13 @@
             Instead of 
                 - October 12, 1970
                 - January 1, 1814
+        > differing by a factor of 20000
+            results in: of 2000 (1/1/2000)
+
+            ideas:
+            The {noun} of {year} - good
+            a {noun} of {number} {noun} - not good
+            a group of 2000 people
 
       ==========================================
       ================ BUGS ====================

@@ -38,7 +38,7 @@ async function handleMultipleResults(obj){
       }
     
     const sorted = allArticles.sort((a, b) => {
-      return new Date(a.date) - new Date(b.date);
+      return a.dateSortMs - b.dateSortMs;
     });
   
     return {sorted: sorted,
@@ -54,9 +54,7 @@ async function handleMultipleResults(obj){
       const parsed = data !== null ? await parseWtf(data.json()) : [];
     
       let sorted = parsed.sort((a, b) => {
-        if (a.date && b.date){
-          return new Date(a.date) - new Date(b.date);
-        }
+          return a.dateSortMs - b.dateSortMs;
       });
     
       const headerData = {header:{
@@ -89,7 +87,6 @@ async function handleMultipleResults(obj){
       paragraphs.map((paragraph) => {
         const sentences = paragraph.sentences;
         sentences.map((sentence)=>{
-          //const sentenceDate = getPageDates(sentence.text);
           const sentenceDate = getDateMatches(sentence.text)
 
           for (const element of sentenceDate) {
@@ -97,45 +94,34 @@ async function handleMultipleResults(obj){
             const humanDate = element[0];
             const realDate = inferDatefromString(element[0]);
 
-            if (realDate !== null){
+              let jsDate = null
 
-                const jsDate = new Date(realDate).toISOString().slice(0, 19).replace('T', ' ');
+                try {
+                  jsDate = new Date(realDate.realDate).toISOString().slice(0, 19).replace('T', ' ');
+                }catch(err){
+                  console.log(`Could not make jsDate from ${realDate}`)
+                }
 
+                if (!realDate.dateSortMs){
+                  console.log('missing sort for ', realDate.realDate)
+                }
+                
                 const row =  {
                   articleTitle: wtFetchData.title,
                   pageId: pageID,
                   stringDate: humanDate,
                   context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
                   sentence: element.input,
-                  date: jsDate,
+                  date: jsDate ? jsDate : null,
                   dateApproximatated: humanDate.match(approximationRegex) ? true : false,
+                  dateSortMs: realDate ?  realDate.dateSortMs : '',
                   meta: {
                     sectionTitle: sectionTitle,
                   }
                 };
 
                 rows.push(row)
-            }
-            else if (realDate == null){
 
-              const row =  {
-                articleTitle: wtFetchData.title,
-                pageId: pageID,
-                stringDate: humanDate,
-                context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
-                sentence: element.input,
-                date: null,
-                dateApproximatated: null,
-                meta: {
-                  sectionTitle: sectionTitle,
-                  err: true,
-                  errMsg: 'Real date could not be found'
-                }
-              };
-
-              rows.push(row)
-
-            }
           }
         })
       })  
@@ -156,6 +142,8 @@ async function handleMultipleResults(obj){
     try {
       const cleanDate = dateString.replace(cleanupRegex, '')
       let realDate = !isNaN(parseFloat(Date.parse(cleanDate))) && isFinite(Date.parse(cleanDate)) ? Date.parse(cleanDate) : null;
+
+      let dateSortMs = null  //!isNaN(parseFloat(Date.parse(cleanDate))) && isFinite(Date.parse(cleanDate)) ? Date.parse(cleanDate).getTime() : null
       // if realDate is null after native date functions
       // then try to use moment to get a js date for BC times?
       
@@ -164,19 +152,44 @@ async function handleMultipleResults(obj){
           if (cleanDate.indexOf('BC') > 0 ){
             const BcYear = cleanDate.replace('BC', '').replace(/,/g, '');
             const paddedYear = BcYear.padStart(7, 0);
+            //Just subtracting the BC date could mean this is off by 2000?
+            //-10000bc is actually 12,000 years ago
             realDate = `-${paddedYear}`;
+            const d = new Date(realDate).toISOString().slice(0, 19).replace('T', ' ')
+            if (typeof d.getTime === 'function'){
+              dateSortMs = d.getTime();
+            }
+            else {
+              dateSortMs = realDate
+            }
           }
           if (cleanDate.indexOf('AD') > 0 ){
             const BcYear = cleanDate.replace('AD', '').replace(/,/g, '');
             const paddedYear = BcYear.padStart(7, 0);
             realDate = `${paddedYear}`;
+            const d = new Date(realDate).toISOString().slice(0, 19).replace('T', ' ')
+            if (typeof d.getTime === 'function'){
+              dateSortMs = d.getTime();
+            }
+            else {
+              dateSortMs = realDate
+            }
           }
           if (cleanDate.indexOf('ago') > 0){
             const today = new Date();
             if (cleanDate.indexOf('years ago') > 0){
               let yearsAgo = cleanDate.replace('years ago', '').replace(/,/g, '');
               if (yearsAgo <= 271821) //oldest date js can handle?
-              realDate = today.setFullYear(today.getFullYear() - yearsAgo)
+                {
+                  realDate = today.setFullYear(today.getFullYear() - yearsAgo)
+                  dateSortMs = realDate;
+                }
+              else {
+                const today = new Date();
+                const yearMS = 31556952000;
+                realDate = '';
+                dateSortMs = today.getTime() - (yearsAgo * yearMS); 
+              }
             }
           }
       }
@@ -184,7 +197,10 @@ async function handleMultipleResults(obj){
         throw `Could not find date from string:  ${dateString}`
       }
       
-      return realDate
+      return {
+        realDate: realDate,
+        dateSortMs: dateSortMs ? dateSortMs : realDate
+      }
     } 
     catch (err){
       console.log(err)
