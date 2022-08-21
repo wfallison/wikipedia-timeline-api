@@ -13,15 +13,12 @@ const cors = initMiddleware(
     origin: "*",
     // Only allow requests with GET, POST and OPTIONS
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    maxAge: '86400000'
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 )
 
 export default async function handler(req, res) {
   await cors(req, res)
-  res.setHeader('Access-Control-Max-Age', 60000 * 60 * 24);
-  res.setHeader('cache-control',  'public, max-age=86400000');
   var obj = req.body;
   const data = await handleMultipleResults(obj)
   res.send(data) 
