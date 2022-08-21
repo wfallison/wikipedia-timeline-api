@@ -20,7 +20,7 @@ const cors = initMiddleware(
 
 export default async function handler(req, res) {
   await cors(req, res)
-  res.header('Access-Control-Max-Age', 60000 * 60 * 24);
+  res.setHeader('Access-Control-Max-Age', 60000 * 60 * 24);
   var obj = req.body;
   const data = await handleMultipleResults(obj)
   res.send(data) 
