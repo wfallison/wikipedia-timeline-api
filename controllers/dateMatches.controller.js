@@ -12,6 +12,7 @@
  /* ============== NOT HANDLED ==============
         > around the year 270 BC.
         > in the 7th century BC,
+        > dating back to the 3rd century AD
         > the year 270 BC
         > 600–1000 CE
         > late 1590s
@@ -26,7 +27,6 @@
         > between 1540 and 1818
         > c. 1471–1493
         > 1810–1814
-        > date back to about 2.5 million years ago
         > After several efforts, Spanish troops 
           from Peru took advantage of the 
           internecine strife to reconquer Chile 
@@ -46,7 +46,7 @@
             Instead of 
                 - October 12, 1970
                 - January 1, 1814
-        > differing by a factor of 20000
+        > "differing by a factor of 20000"
             results in: of 2000 (1/1/2000)
 
             ideas:
@@ -75,7 +75,7 @@ export const getDateMatches = (sentence) => {
         sentence = sentence.replace(/,/g, '')
     }
 
-    const regex = /\b( on |.On |in |.In |as of |the |.The |of |around |a )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
+    const regex = /\b( on |.On |in |.In |as of |the |.The |of |around |a |c. )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
     const bcDatesRegex = /\d{1,} BC|\d{1,}BC|\d{1,}AD |\d{1,} AD /gi
 
     //Dates relative to NOW only
