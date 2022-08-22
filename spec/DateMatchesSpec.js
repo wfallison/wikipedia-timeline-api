@@ -51,4 +51,14 @@ describe('Date Matcher', function () {
 		expect(getDateMatches(sentence)[0][0]).toEqual('2055BC');
 	});
 
+  it("should not extract a year from a measurement - '2000 m.' ", function () {
+		const sentence = `to a depth of 2000 m.`;
+		expect(getDateMatches(sentence)[0][0]).toEqual(null);
+	});
+
+  it("should extract a long written english/american date format", function () {
+		const sentence = `On the 31st of October, 2022`;
+		expect(getDateMatches(sentence)[0][0]).toEqual('the 31st of October 2022');
+	});
+  
 });

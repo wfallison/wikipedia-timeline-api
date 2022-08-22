@@ -9,84 +9,17 @@
     
 */
 
- /* ============== NOT HANDLED ==============
-        > around the year 270 BC.
-        > in the 7th century BC,
-        > dating back to the 3rd century AD
-        > the year 270 BC
-        > 600–1000 CE
-        > late 1590s
-        > from the late 1590s
-        > From 1817 to 1823
-        > since at least the early 1660s
-        > after 1600 // not to be confused with a 
-                     // number like, 'after 1600 
-                     // bottles of...'
-        > in 2007–2008  ?
-        > in the 1560s–70s
-        > between 1540 and 1818
-        > c. 1471–1493
-        > 1810–1814
-        > After several efforts, Spanish troops 
-          from Peru took advantage of the 
-          internecine strife to reconquer Chile 
-          in 1814, when they reasserted control 
-          by the Battle of Rancagua on 
-          October 12. O'Higgins, Carrera and 
-          many of the Chilean rebels escaped 
-          to Argentina.
-        > kyr, myr, byr, kya, mya, bya
-          (Thousand, Million, Billion, Time ago in Ka (Thousands), 
-          time ago in MA (Millions), time ago in GA (Billions))
-          Read more:
-          https://en.wikipedia.org/wiki/Year#SI_prefix_multipliers
-        > millennia later
-        > millennia before
-          > Infer October 12, 1814
-            Instead of 
-                - October 12, 1970
-                - January 1, 1814
-        > "differing by a factor of 20000"
-            results in: of 2000 (1/1/2000)
-
-            ideas:
-            The {noun} of {year} - good
-            a {noun} of {number} {noun} - not good
-            a group of 2000 people
-
-      ==========================================
-      ================ BUGS ====================
-        > to a depth of 2000 m. (Earth Article)    
-            ==> The year 2000
-        > In Mark 14 "In Mark 14:61 the high..."   
-            ==> A not real date "Mark 14"
-        > 1683.3 /sqmi.
-            ==> from Las Vegas article
-        > in Oregon with more than 50,000 adherents
-            ==> 000 AD
-            *Poorly fixed*
-        > Eastern Oregon is sparsely populated but is 
-          home to Hermiston which with a population of
-          18000 is the largest and fastest-growing 
-          city in the region.
-            ==> (year) of 1800
-            ==> Should not appear at all, as its a 
-                description of the population size
-        > Around 2055BC the northern Theban forces under 
-          Nebhepetre Mentuhotep II finally defeated the 
-          Herakleopolitan rulers reuniting the Two Lands.
-          => Coming through as year 2055 not BC (Ancient Egypt Article)
-    */ 
-
 export const getDateMatches = (sentence) => {
 
+
+    //console.log(sentence)
     //remove comma making 10,000 BC turn into 000 BC
     //probably more instances of this kind of thing 
     if (typeof sentence === 'string'){
         sentence = sentence.replace(/,/g, '')
     }
 
-    /* bigRegex
+    /*  bigRegex
       - Handles a ton of different things
     */
     const bigRegex = /\b( on |.On |in |.In |as of |the |.The |of |around |a |c. )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
@@ -95,17 +28,22 @@ export const getDateMatches = (sentence) => {
       - Use for older dates, eventually adding ba. and ka.
     */
     const bcDatesRegex = /\d{1,} BC|\d{1,}BC|\d{1,}AD |\d{1,} AD /gi
-    /* relativeDatesRegex
+    /*  relativeDatesRegex
       - Used for "ago" format
       - Date calculations based on today
     */
     const relativeDatesRegex = /\b((\d+|([0-9]+\.?[0-9]*|\.[0-9]+))( years ago| months ago| days ago| centuries ago| decades ago | million years ago| billion years ago))/gi
 
     /*
+      e.g. "the 31st of October, 2022"
+    */
+    const longAmericanDatesRegex = /\b(the \d{1,2})(st|nd|rd|th)(.of.)?\b(\b\d{1,2}\D{0,3})?(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(15\d{2}|16\d{2}|17\d{2}18\d{2}|19\d{2}|20\d{2})/gi
+
+    /*
       Start filling array, and overwrite it if any other method 
       finds a match for the given string.
     */
-   
+
     let array = [...sentence.matchAll(bigRegex)];
 
     const bcDates = [...sentence.matchAll(bcDatesRegex)];
@@ -116,6 +54,11 @@ export const getDateMatches = (sentence) => {
     const relativeDates = [...sentence.matchAll(relativeDatesRegex)]
       if (relativeDates.length !== 0){
         array = relativeDates
+      }
+    
+    const longAmericanDates= [...sentence.matchAll(longAmericanDatesRegex)]
+      if (longAmericanDates.length !== 0){
+        array = longAmericanDates
       }
 
     return array;
