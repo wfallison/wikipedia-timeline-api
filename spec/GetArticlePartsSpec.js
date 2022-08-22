@@ -1,4 +1,4 @@
-import { getArticleParts } from '../controllers/getArticleParts.controller.js';
+//import { getArticleParts } from '../controllers/getArticleParts.controller.js';
 // will getArticleParts deal with the API layer? Maybe its fine to interact
 // with the controller only here?
 

@@ -40,11 +40,15 @@ describe('Date Matcher', function () {
   it("should extract '100000 years ago' from string", function () {
 		const sentence = `This small variation in human DNA compared to many other 
     species suggests a population bottleneck during the Late Pleistocene (around 
-      100000 years ago) in which the human population was reduced to a small 
-      number of breeding pairs.`;
+    100000 years ago) in which the human population was reduced to a small 
+    number of breeding pairs.`;
 		expect(getDateMatches(sentence)[0][0]).toEqual('100000 years ago');
 	});
 
-  
+  it("should extract '2055BC' from string", function () {
+		const sentence = `Around 2055BC the northern Theban forces under Nebhepetre 
+    Mentuhotep II finally defeated the Herakleopolitan rulers reuniting the Two Lands.`;
+		expect(getDateMatches(sentence)[0][0]).toEqual('2055BC');
+	});
 
 });

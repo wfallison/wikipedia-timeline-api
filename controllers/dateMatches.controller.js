@@ -72,6 +72,10 @@
             ==> (year) of 1800
             ==> Should not appear at all, as its a 
                 description of the population size
+        > Around 2055BC the northern Theban forces under 
+          Nebhepetre Mentuhotep II finally defeated the 
+          Herakleopolitan rulers reuniting the Two Lands.
+          => Coming through as year 2055 not BC (Ancient Egypt Article)
     */ 
 
 export const getDateMatches = (sentence) => {
@@ -82,29 +86,37 @@ export const getDateMatches = (sentence) => {
         sentence = sentence.replace(/,/g, '')
     }
 
-    const regex = /\b( on |.On |in |.In |as of |the |.The |of |around |a |c. )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
+    /* bigRegex
+      - Handles a ton of different things
+    */
+    const bigRegex = /\b( on |.On |in |.In |as of |the |.The |of |around |a |c. )\b(\b\d{1,2}\D{0,3})?\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\D?(\d{1,2}\D?)?\D?((15[1-9]\d|16[1-9]\d|17[1-9]\d|18[1-9]\d|19[1-9]\d|20\d{2})|\d{2})|(The (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(In (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Of (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2}))|(Around (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})|(until (15\d{2}|16\d{2}|17\d{2}|18\d{2}|19\d{2}|20\d{2})))/gi;
+    /*  bcDatesRegex
+      - Contains BC or AD
+      - Use for older dates, eventually adding ba. and ka.
+    */
     const bcDatesRegex = /\d{1,} BC|\d{1,}BC|\d{1,}AD |\d{1,} AD /gi
+    /* relativeDatesRegex
+      - Used for "ago" format
+      - Date calculations based on today
+    */
+    const relativeDatesRegex = /\b((\d+|([0-9]+\.?[0-9]*|\.[0-9]+))( years ago| months ago| days ago| centuries ago| decades ago | million years ago| billion years ago))/gi
 
-    //Dates relative to NOW only
-    //Dates relative to other dates within the article
-    //need to be handled elsewhere
-    const relativeDatesRegex = /\b((\d+|([0-9]+\.?[0-9]*|\.[0-9]+))(years ago| months ago| days ago| centuries ago| decades ago | million years ago| billion years ago))/gi
+    /*
+      Start filling array, and overwrite it if any other method 
+      finds a match for the given string.
+    */
+   
+    let array = [...sentence.matchAll(bigRegex)];
 
-    // use the old method of doing it all at once
-    let array = [...sentence.matchAll(regex)];
+    const bcDates = [...sentence.matchAll(bcDatesRegex)];
+      if (bcDates.length !== 0) {
+        array = bcDates;
+      }
 
-    // if the old method doesnt get a match
-    if (array.length == 0){
-
-        const bcDates = [...sentence.matchAll(bcDatesRegex)];
-        if (bcDates.length !== 0) {
-            array = bcDates;
-        }
-        const relativeDates = [...sentence.matchAll(relativeDatesRegex)]
-        if (relativeDates.length !== 0){
-            array = relativeDates
-        }
-    } 
+    const relativeDates = [...sentence.matchAll(relativeDatesRegex)]
+      if (relativeDates.length !== 0){
+        array = relativeDates
+      }
 
     return array;
 };
