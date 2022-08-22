@@ -60,5 +60,11 @@ describe('Date Matcher', function () {
 		const sentence = `On the 31st of October, 2022`;
 		expect(getDateMatches(sentence)[0][0]).toEqual('the 31st of October 2022');
 	});
+
+  //Will be replaced with Holiday spec
+  it("should extract 1900 from string", function () {
+		const sentence = `mass meeting for May Day 1900`;
+		expect(getDateMatches(sentence)[0][0]).toEqual('1900');
+	});
   
 });
