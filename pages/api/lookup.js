@@ -1,13 +1,4 @@
-import Cors from 'cors'
-import initMiddleware from '../../lib/init-middleware'
-
-const cors = initMiddleware(
-  Cors({
-    origin: "*",
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
-  })
-)
+import cors from '../../lib/cors'
 
 export default async function handler(req, res) {
 
