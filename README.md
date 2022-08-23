@@ -1,25 +1,80 @@
-# API Routes Example with CORS
+# Wikipedia-Timeline-API
 
-Next.js ships with [API routes](https://nextjs.org/docs/api-routes/introduction) which provides an easy solution to build your own `API`.
+An API for extracting dates from Wikipedia articles.
 
-This example shows how to create an `API` endpoint with [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) headers, using the [cors](https://github.com/expressjs/cors) package.
+Consumes services from:
+- [Wikipedia](https://en.wikipedia.org/)
+- [WTF Wikipedia](https://www.npmjs.com/package/wtf_wikipedia)
 
-## Deploy your own
+# Examples
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/api-routes-cors)
+* Fetch timeline data for multiple article titles : `POST /api/w/`
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/api-routes-cors&project-name=api-routes-cors&repository-name=api-routes-cors)
+    example payload:
+    ```javascript
+      [
+        {articleTitle: "Pangaea"}, 
+        {articleTitle: "Human"}, 
+        {articleTitle: "Agriculture"},
+        {articleTitle: "Pangaea"}
+        {articleTitle: "Human"}
+        {articleTitle: "Agriculture"}
+        {articleTitle: "Horseshoe crab"}
+        {articleTitle: "Rodinia"}
+        {articleTitle: "Columbia (supercontinent)"}
+        {articleTitle: "Tool"}
+      ]
+    ```
 
-## How to use
+    ## Success Response
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+    **Code** : `200 OK`
 
-```bash
-npx create-next-app --example api-routes-cors api-routes-cors-app
-# or
-yarn create next-app --example api-routes-cors api-routes-cors-app
-# or
-pnpm create next-app -- --example api-routes-cors api-routes-cors-app
-```
+    **Content example**
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+    ```json
+      {
+        "sorted":
+          [
+            {
+              "articleTitle":"2022",
+              "pageId":52412,
+              "stringDate":"in 2020",
+              "context":"The global rollout of COVID-19 vaccines which began in 2020...",
+              "sentence":"The global rollout of COVID-19 vaccines which began in 2020...",
+              "dateSortMs":1577836800000,
+              "meta":
+                {
+                  "sectionTitle":""
+                }
+            }
+          ],
+        "headers":
+          [
+            {
+              "header":
+                {
+                  "searchedValue":"2022",
+                  "foundArticleTitle":"2022",
+                  "countRecords":1
+                }
+            }
+          ]
+      }
+    ```
+
+<!-- ## Error Response
+
+**Condition** : If 'username' and 'password' combination is wrong.
+
+**Code** : `400 BAD REQUEST`
+
+**Content** :
+
+```json
+{
+    "non_field_errors": [
+        "Unable to login with provided credentials."
+    ]
+}
+``` -->
