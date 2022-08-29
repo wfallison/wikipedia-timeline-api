@@ -3,6 +3,6 @@ import {createTimelineCollection, getAllTimeLineCollections} from '../../lib/mon
 
 export default async function handler(req, res) {
   await cors(req, res)
-  const collections = await getAllTimeLineCollections()
+  const collections = await getAllTimeLineCollections(req.query.page)
   res.send(collections)
 }
