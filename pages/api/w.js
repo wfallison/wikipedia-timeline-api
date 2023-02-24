@@ -32,16 +32,16 @@ async function fetchArticles(obj){
 
   const results = await Promise.all(promises);
 
-  // const sorted = allArticles.sort((a, b) => {
-  //   return a.dateSortMs - b.dateSortMs;
-  // });
+  const allArticlesSorted = allArticles.sort((a, b) => {
+    return a.dateSortMs - b.dateSortMs;
+  });
 
-  const allArticles = results.reduce((acc, curr) => {
-    if (curr) {
-      return acc.concat(curr.sorted);
-    }
-    return acc;
-  }, []);
+  // const allArticles = results.reduce((acc, curr) => {
+  //   if (curr) {
+  //     return acc.concat(curr.sorted);
+  //   }
+  //   return acc;
+  // }, []);
 
   const allHeaders = results.reduce((acc, curr) => {
     if (curr) {
@@ -54,7 +54,7 @@ async function fetchArticles(obj){
   //   allArticles,
   //   allHeaders
   // };
-  return {sorted: allArticles,
+  return {sorted: allArticlesSorted,
     headers: allHeaders
   };
 }
