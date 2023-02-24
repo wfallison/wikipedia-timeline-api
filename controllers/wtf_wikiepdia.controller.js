@@ -16,49 +16,57 @@ export const fetchWtf = async (searchString) => {
 
 		return { sorted: parsed, headerData: headerData };
 	} catch (err) {
-		console.log(err);
+    console.log(err);
+    return false
 	}
 };
 
 export const parseWtf = async (wtFetchData) => {
-	const sections = wtFetchData.sections;
-	const timelineEntries = [];
+  try {
+    const sections = wtFetchData.sections;
+    const timelineEntries = [];
 
-	const pageID = wtFetchData.pageID;
+    const pageID = wtFetchData.pageID;
 
-	sections.map((section) => {
-		const sectionTitle = section.title;
-		const paragraphs = section.paragraphs ? section.paragraphs : [];
-		paragraphs.map((paragraph) => {
-			const sentences = paragraph.sentences;
-			sentences.map((sentence) => {
-				const sentenceDate = getDateMatches(sentence.text);
-				for (const element of sentenceDate) {
-					const humanDate = element[0];
-					const realDate = inferDatefromString(element[0]);
+    sections.map((section) => {
+      const sectionTitle = section.title;
+      const paragraphs = section.paragraphs ? section.paragraphs : [];
+      paragraphs.map((paragraph) => {
+        const sentences = paragraph.sentences;
+        sentences.map((sentence) => {
+          const sentenceDate = getDateMatches(sentence.text);
+          for (const element of sentenceDate) {
+            const humanDate = element[0];
+            const realDate = inferDatefromString(element[0]);
 
-					if (!realDate.dateSortMs) {
-						console.log('missing sort for ', realDate.realDate);
-					}
+            if (!realDate.dateSortMs) {
+              console.log('missing sort for ', realDate.realDate);
+            }
 
-					const timelineEntry = {
-						articleTitle: wtFetchData.title,
-						pageId: pageID,
-						stringDate: humanDate,
-						context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
-						sentence: element.input,
-						dateSortMs: realDate ? realDate.dateSortMs : '',
-						meta: {
-							sectionTitle: sectionTitle,
-						},
-					};
+            const timelineEntry = {
+              articleTitle: wtFetchData.title,
+              pageId: pageID,
+              stringDate: humanDate,
+              context: element.input, //Should be entire paragraph? Or previous and next few sentences? Position in paragraph may matter.
+              sentence: element.input,
+              dateSortMs: realDate !== null ? realDate.dateSortMs : '',
+              meta: {
+                sectionTitle: sectionTitle,
+              },
+            };
 
-					timelineEntries.push(timelineEntry);
-				}
-			});
-		});
-	});
-	return timelineEntries;
+            timelineEntries.push(timelineEntry);
+          }
+        });
+      });
+    });
+    return timelineEntries;
+  } catch (err) {
+    console.log('Err in parser: ', err)
+    return err
+  } finally {
+
+  }
 };
 
 function inferDatefromString(dateString) {
