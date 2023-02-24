@@ -4,5 +4,10 @@ import {createTimelineCollection, getAllTimeLineCollections} from '../../lib/mon
 export default async function handler(req, res) {
   await cors(req, res)
   const collections = await getAllTimeLineCollections(req.query.page)
-  res.send(collections)
+  if (collections){
+    res.send(collections)
+  }
+  else {
+    res.status(400).json('No collection items could be found.')
+  }
 }
